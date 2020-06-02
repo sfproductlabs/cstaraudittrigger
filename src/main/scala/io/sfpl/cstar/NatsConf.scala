@@ -1,13 +1,13 @@
 package io.sfpl.cstar
 
 import com.typesafe.config.ConfigFactory
-
+import java.io.File
 import scala.util.Try
 
 trait NatsConf {
   // config object
-  val natsConf = ConfigFactory.load("nats.conf")
-  println(natsConf.getString("nats.addr"))
+  val baseConfig = ConfigFactory.load("nats.conf")
+  val natsConf = ConfigFactory.parseFile(new File("/etc/cassandra/nats.conf")).withFallback(baseConfig).resolve()
   // nats conf
   lazy val natsAddr = Try(natsConf.getString("nats.addr")).getOrElse("dev.localhost:9092")
   lazy val natsGroup = Try(natsConf.getString("nats.group")).getOrElse("aplosg")

@@ -25,7 +25,9 @@ public class AuditNatsTrigger implements ITrigger {
 
     public AuditNatsTrigger() {
         
-        NatsInterop.printMe();
+        NatsInterop.Publish();
+        System.out.println(getProps());
+        //System.out.println(NatsConf.natsAddr);
         //siddiTopic = getEnv("NATS_TOPIC");
         // producer = new NatsProducer<>(getProps());
         threadPoolExecutor = new ThreadPoolExecutor(4, 20, 30,

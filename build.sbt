@@ -19,8 +19,8 @@ libraryDependencies ++= {
 //unmanagedJars in Compile += file("./lib/jnats-2.6.8.jar")
 //libraryDependencies ++= Seq("io.nats" % "client" % "2.6.8" from "file://./lib/jnats-2.6.8.jar")
 //javacOptions in (Compile, compile) ++= Seq("-source", "1.8", "-target", "1.8", "-g:lines")
-//crossPaths := false
-//autoScalaLibrary := false
+crossPaths := false
+autoScalaLibrary := false
 
 resolvers ++= Seq(
   "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/"
