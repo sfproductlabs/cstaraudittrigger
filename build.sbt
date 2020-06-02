@@ -1,8 +1,9 @@
 name := "cstar-audit-nats-trigger"
-
+organization := "io.sfpl"
 version := "1.0"
 
 scalaVersion := "2.11.8"
+
 
 libraryDependencies ++= {
 
@@ -15,9 +16,19 @@ libraryDependencies ++= {
   )
 }
 
+//unmanagedJars in Compile += file("./lib/jnats-2.6.8.jar")
+//libraryDependencies ++= Seq("io.nats" % "client" % "2.6.8" from "file://./lib/jnats-2.6.8.jar")
+//javacOptions in (Compile, compile) ++= Seq("-source", "1.8", "-target", "1.8", "-g:lines")
+//crossPaths := false
+//autoScalaLibrary := false
+
 resolvers ++= Seq(
   "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/"
 )
+
+javaHome.in(Compile) := {
+  Some(file(sys.props("java.home")).getParentFile)
+}
 
 assemblyMergeStrategy in assembly := {
   case PathList(ps @ _*) if ps.last endsWith ".properties" => MergeStrategy.first

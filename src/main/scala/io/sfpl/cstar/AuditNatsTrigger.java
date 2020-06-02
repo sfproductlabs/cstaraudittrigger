@@ -6,7 +6,9 @@ import org.apache.cassandra.db.rows.Row;
 import org.apache.cassandra.db.rows.Unfiltered;
 import org.apache.cassandra.db.rows.UnfilteredRowIterator;
 import org.apache.cassandra.triggers.ITrigger;
-import org.nats.*;
+
+
+import io.nats.client.AuthHandler;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -17,15 +19,15 @@ import java.util.concurrent.TimeUnit;
 
 public class AuditNatsTrigger implements ITrigger {
 
-    private String siddiTopic;
-    private Producer<String, String> producer;
+    //private String siddiTopic;
+    //private Producer<String, String> producer;
     private ThreadPoolExecutor threadPoolExecutor;
 
     public AuditNatsTrigger() {
         
-
-        siddiTopic = getEnv("NATS_TOPIC");
-        producer = new NatsProducer<>(getProps());
+        NatsInterop.printMe();
+        //siddiTopic = getEnv("NATS_TOPIC");
+        // producer = new NatsProducer<>(getProps());
         threadPoolExecutor = new ThreadPoolExecutor(4, 20, 30,
                 TimeUnit.SECONDS, new LinkedBlockingDeque<>());
     }
@@ -52,16 +54,16 @@ public class AuditNatsTrigger implements ITrigger {
                             System.out.println("row insert");
 
                             // produce insert
-                            ProducerRecord<String, String> record = new ProducerRecord<>(siddiTopic, "INSERT");
-                            producer.send(record);
+                            // ProducerRecord<String, String> record = new ProducerRecord<>(siddiTopic, "INSERT");
+                            // producer.send(record);
                         } else {
                             if (row.deletion().isLive()) {
                                 // row update
                                 System.out.println("row update");
 
                                 // produce update
-                                ProducerRecord<String, String> record = new ProducerRecord<>(siddiTopic, "UPDATE");
-                                producer.send(record);
+                                // ProducerRecord<String, String> record = new ProducerRecord<>(siddiTopic, "UPDATE");
+                                // producer.send(record);
                             }
                         }
                         break;
@@ -75,8 +77,8 @@ public class AuditNatsTrigger implements ITrigger {
             System.out.println("partition delete");
 
             // produce delete
-            ProducerRecord<String, String> record = new ProducerRecord<>(siddiTopic, "DELETE");
-            producer.send(record);
+            // ProducerRecord<String, String> record = new ProducerRecord<>(siddiTopic, "DELETE");
+            // producer.send(record);
         }
     }
 
