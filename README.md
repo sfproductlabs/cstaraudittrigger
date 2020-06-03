@@ -2,6 +2,9 @@
 
 Cassandra audit trigger built with scala sbt project for nats.io messaging. This is particularly useful to implement auditing prior to Cassandra 4, and useful for creating other boilerplate triggers.
 
+## Getting Started with Scala SBT
+* https://www.scala-sbt.org/1.x/docs/Setup.html
+
 ## Prepare TLS (Required)
 
 Everything at SFPL uses encryption by default (even testing). You can find docker images with encryption on by default (with test certificates below).
