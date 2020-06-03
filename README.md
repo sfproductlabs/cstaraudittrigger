@@ -14,19 +14,20 @@ keytool -keystore nats-keystore.jks -alias CARoot -import -file rootCa.crt -stor
 rm cert.p12 combined.pem
 ```
 
-## Build
+## Build & Deploy
 
-Build jar file from this project(cstar-audit-nats-trigger.jar) and copy it to $CASSANDRA_HOME/triggers 
-directory for example:
+Build jar file from this project(cstar-audit-nats-trigger.jar) and copy it to $CASSANDRA_HOME/triggers on every cassandra server, for example:
 
 ```
 sbt assembly && \
 sudo cp ./target/cstar-audit-nats-trigger-assembly-1.0.jar /etc/cassandra/triggers/
 ```
 
-## Deploy
+Then run something like:
 ```
-cp ./target/scala-2.11/cstar-audit-nats-trigger-assembly-1.0.jar /etc/cassandra/triggers/
+CREATE TRIGGER auditblobs
+        ON cstartest.blobs
+        USING 'io.sfpl.cstar.AuditNatsTrigger';
 ```
 
 ## Credits
