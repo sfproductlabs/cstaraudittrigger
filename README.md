@@ -49,6 +49,11 @@ CREATE TRIGGER auditblobs
         USING 'io.sfpl.cstar.AuditNatsTrigger';
 ```
 
+Then run an auditable event (we always use [updater](https://github.com/sfproductlabs/tracker/blob/eafe7f90b1b740abe2a3a9324574491c27f5da99/.setup/schema.2.cql#L374) in our update queries so we know who's responsible). A simpler example:
+```
+INSERT INTO cstartest.blobs(id, payload) VALUES('001', 'dev');
+```
+
 And test:
 ```
 cqlsh> SELECT * FROM cstartest.logs where params['__table'] = 'blobs' allow filtering;
