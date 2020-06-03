@@ -21,7 +21,7 @@ rm cert.p12 combined.pem
 
 ## Build & Deploy
 
-Build jar file from this project(cstar-audit-nats-trigger.jar) and copy it to $CASSANDRA_HOME/triggers on every cassandra server, for example:
+Build jar file from this project(cstar-audit-nats-trigger.jar) and copy it to $CASSANDRA_HOME/triggers on **every cassandra server**, for example:
 
 ```
 sbt assembly && \
