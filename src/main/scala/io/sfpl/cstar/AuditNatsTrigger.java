@@ -3,10 +3,14 @@ package io.sfpl.cstar;
 import org.apache.cassandra.db.Mutation;
 import org.apache.cassandra.db.partitions.Partition;
 import org.apache.cassandra.db.rows.Row;
+import org.apache.cassandra.db.rows.Cell;
 import org.apache.cassandra.db.rows.Unfiltered;
+import org.apache.cassandra.db.Clustering;
 import org.apache.cassandra.db.rows.UnfilteredRowIterator;
 import org.apache.cassandra.triggers.ITrigger;
 
+//import org.apache.cassandra.schema.ColumnMetadata; //Cassandra 4
+import org.apache.cassandra.config.ColumnDefinition; //Replace with Cass 4
 
 import io.nats.client.AuthHandler;
 
@@ -16,19 +20,15 @@ import java.util.Properties;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.Iterator;
+
+import org.json.JSONObject;
 
 public class AuditNatsTrigger implements ITrigger {
 
-    //private String siddiTopic;
-    //private Producer<String, String> producer;
     private ThreadPoolExecutor threadPoolExecutor;
 
     public AuditNatsTrigger() {
-        
-        //System.out.println(getProps());
-        //System.out.println(NatsConf.natsAddr);
-        //siddiTopic = getEnv("NATS_TOPIC");
-        // producer = new NatsProducer<>(getProps());
         threadPoolExecutor = new ThreadPoolExecutor(4, 20, 30,
                 TimeUnit.SECONDS, new LinkedBlockingDeque<>());
     }
@@ -40,7 +40,11 @@ public class AuditNatsTrigger implements ITrigger {
     }
 
     private void handleUpdate(Partition partition) {
-        NatsInterop.Publish();
+        JSONObject obj = new JSONObject();
+
+        String tableName = partition.metadata().cfName;
+        obj.put("__table", tableName); 
+        obj.put("__key", partition.metadata().getKeyValidator().getString(partition.partitionKey().getKey()));
 
         if (partition.partitionLevelDeletion().isLive()) {
             UnfilteredRowIterator it = partition.unfilteredIterator();
@@ -51,22 +55,13 @@ public class AuditNatsTrigger implements ITrigger {
                         // row
                         Row row = (Row) un;
                         if (row.primaryKeyLivenessInfo().timestamp() != Long.MIN_VALUE) {
-                            // row insert
                             // only INSERT operation updates row timestamp (LivenessInfo).
                             // For other operations this timestamp is not updated and equals Long.MIN_VALUE
-                            System.out.println("row insert");
-
-                            // produce insert
-                            // ProducerRecord<String, String> record = new ProducerRecord<>(siddiTopic, "INSERT");
-                            // producer.send(record);
+                            obj.put("__action", "insert");
                         } else {
                             if (row.deletion().isLive()) {
                                 // row update
-                                System.out.println("row update");
-
-                                // produce update
-                                // ProducerRecord<String, String> record = new ProducerRecord<>(siddiTopic, "UPDATE");
-                                // producer.send(record);
+                                obj.put("__action", "update");
                             }
                         }
                         break;
@@ -74,32 +69,23 @@ public class AuditNatsTrigger implements ITrigger {
                         // range deletion
                         break;
                 }
+                Clustering clt = (Clustering) un.clustering();  
+                Iterator<Cell> cells = partition.getRow(clt).cells().iterator();
+                Iterator<ColumnDefinition> columns = partition.getRow(clt).columns().iterator();
+
+                while(columns.hasNext()){
+                    ColumnDefinition columnDef = columns.next();
+                    Cell cell = cells.next();
+                    String data = new String(cell.value().array()); // If cell type is text
+                    obj.put(columnDef.toString(), data);
+                }
             }
         } else {
             // partition level deletion
-            System.out.println("partition delete");
-
-            // produce delete
-            // ProducerRecord<String, String> record = new ProducerRecord<>(siddiTopic, "DELETE");
-            // producer.send(record);
+            obj.put("__action", "delete");
         }
+        NatsInterop.Publish("tic.log.audit", new Log("generic", 30, "tic.log.audit", "audit", obj.toString(), null, null, null, null));
     }
 
-    private Properties getProps() {
-        Properties properties = new Properties();
-        properties.put("bootstrap.servers", getEnv("NATS_ADDR"));
-        properties.put("key.serializer", "org.apache.nats.common.serialization.StringSerializer");
-        properties.put("value.serializer", "org.apache.nats.common.serialization.StringSerializer");
-
-        return properties;
-    }
-
-    private String getEnv(String name) {
-        String env = System.getenv(name);
-        System.out.println("read env " + name + " - " + env);
-
-        if (env == null) return "";
-        else return env;
-    }
 
 }

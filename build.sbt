@@ -12,7 +12,7 @@ libraryDependencies ++= {
     "com.typesafe.akka"         %% "akka-slf4j"       % "2.4.14",
     "org.apache.cassandra"      % "cassandra-all"     % "3.11.0",
     "com.github.tyagihas"       % "scala_nats_2.11"   % "0.3.0",
-    "net.liftweb"               %% "lift-json"        % "3.4+",
+    "org.json"                  % "json"             % "20200518",
     "org.scalatest"             % "scalatest_2.11"    % "2.2.1"               % "test"
   )
 }
