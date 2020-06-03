@@ -25,8 +25,7 @@ public class AuditNatsTrigger implements ITrigger {
 
     public AuditNatsTrigger() {
         
-        NatsInterop.Publish();
-        System.out.println(getProps());
+        //System.out.println(getProps());
         //System.out.println(NatsConf.natsAddr);
         //siddiTopic = getEnv("NATS_TOPIC");
         // producer = new NatsProducer<>(getProps());
@@ -41,6 +40,8 @@ public class AuditNatsTrigger implements ITrigger {
     }
 
     private void handleUpdate(Partition partition) {
+        NatsInterop.Publish();
+
         if (partition.partitionLevelDeletion().isLive()) {
             UnfilteredRowIterator it = partition.unfilteredIterator();
             while (it.hasNext()) {

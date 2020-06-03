@@ -16,11 +16,12 @@ rm cert.p12 combined.pem
 
 ## Build
 
-build jar file from this project(cstar-audit-nats-trigger.jar) and copy it to /var/lib/cassandra/lib/triggers 
-directory
+Build jar file from this project(cstar-audit-nats-trigger.jar) and copy it to $CASSANDRA_HOME/triggers 
+directory for example:
 
 ```
-sbt assembly
+sbt assembly && \
+sudo cp ./target/cstar-audit-nats-trigger-assembly-1.0.jar /etc/cassandra/triggers/
 ```
 
 ## Deploy
