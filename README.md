@@ -82,7 +82,7 @@ We recommend elassandra for your workhorse database over cassandra. It provides 
 
 #### Tracker (Optional)
 
-We use an in house GDPR compliant telemetry system called [tracker](https://github.com/sfproductlabs/tracker). The schema for the default log entry, ends up in ```LOGS```` (https://github.com/sfproductlabs/tracker/blob/master/.setup/schema.2.cql).
+We use an in house GDPR compliant telemetry system called [tracker](https://github.com/sfproductlabs/tracker). The schema for the default log entry, ends up in ```LOGS``` (https://github.com/sfproductlabs/tracker/blob/master/.setup/schema.2.cql).
 
 Get a copy from https://hub.docker.com/repository/docker/sfproductlabs/tracker
 
